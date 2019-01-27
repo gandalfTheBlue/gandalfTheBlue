@@ -8,7 +8,7 @@ module.exports = {
       twitter: '@dan_abramov',
     },
   },
-  pathPrefix: '/',
+  pathPrefix: '/gandalfTheBlue',
   plugins: [
     {
       resolve: `gatsby-source-filesystem`,
