@@ -1,12 +1,9 @@
 {
-  "name": "overreacted",
+  "name": "gandalfTheBlue",
   "private": true,
-  "description": "Overreacted",
+  "description": "gandalf the blue",
   "version": "1.0.0",
-  "author": "Dan Abramov <dan.abramov@me.com>",
-  "bugs": {
-    "url": "https://github.com/gaearon/overreacted.io/issues"
-  },
+  "author": "shan yang",
   "dependencies": {
     "gatsby": "^2.0.76",
     "gatsby-plugin-feed": "^2.0.8",
