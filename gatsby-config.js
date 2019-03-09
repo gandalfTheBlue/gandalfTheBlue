@@ -112,7 +112,6 @@ module.exports = {
                       frontmatter {
                         title
                         date
-                        spoiler
                       }
                     }
                   }

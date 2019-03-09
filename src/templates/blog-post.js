@@ -143,7 +143,7 @@ class BlogPostTemplate extends React.Component {
           />
         )}
         <div dangerouslySetInnerHTML={{ __html: post.html }} />
-        <p>
+        {/* <p>
           <a href={discussUrl} target="_blank" rel="noopener noreferrer">
             Discuss on Twitter
           </a>
@@ -151,14 +151,14 @@ class BlogPostTemplate extends React.Component {
           <a href={editUrl} target="_blank" rel="noopener noreferrer">
             Edit on GitHub
           </a>
-        </p>
+        </p> */}
         <div
           style={{
             margin: '90px 0 40px 0',
             fontFamily: systemFont,
           }}
         >
-          <Signup />
+          {/* <Signup /> */}
         </div>
         <h3
           style={{
@@ -224,7 +224,6 @@ export const pageQuery = graphql`
       frontmatter {
         title
         date(formatString: "MMMM DD, YYYY")
-        spoiler
       }
       fields {
         slug
