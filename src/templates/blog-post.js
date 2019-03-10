@@ -174,7 +174,7 @@ class BlogPostTemplate extends React.Component {
             }}
             to={'/'}
           >
-            Overreacted
+            Gandalf The Blue
           </Link>
         </h3>
         <Bio />
