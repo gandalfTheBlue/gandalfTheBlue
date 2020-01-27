@@ -40,7 +40,7 @@
     "gh-pages": "^2.0.1",
     "prettier": "^1.14.2"
   },
-  "homepage": "https://overreacted.io",
+  "homepage": "https://gandalftheblue.github.io/gandalfTheBlue",
   "license": "MIT",
   "scripts": {
     "dev": "gatsby develop",
