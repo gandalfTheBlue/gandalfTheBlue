@@ -25,11 +25,11 @@ React出现在在Web开发领域已经有一段时间了，近年来它作为敏
 
 React的核心概念之一是处理状态。 您可以通过状态控制整个数据流和渲染。 每次重新渲染树时，它很可能与状态变化有关。
 
-通过`useState`钩子，现在可以在函数组件中定义状态，这是一种在React中处理状态的非常整洁而简便的方法。 但正如我们在以下示例中看到的那样，它也可能被错误使用。
+通过`useState hook`，现在可以在函数组件中定义状态，这是一种在React中处理状态的非常整洁而简便的方法。 但正如我们在以下示例中看到的那样，它也可能被错误使用。
 
 对于下一个示例，我们需要一些说明，假设我们有两个按钮，一个按钮是计数器，另一个按钮使用当前计数发送API请求或触发操作。 不过，当前计数永远不会在组件内展示。 仅当单击第二个按钮时才需要该计数来发送API请求。
 
-## 这很危险 ❌
+### 这很危险 ❌
 
 ```jsx
 function ClickButton(props) {
@@ -41,6 +41,34 @@ function ClickButton(props) {
 
   const onClickRequest = () => {
     apiCall(count);
+  };
+
+  return (
+    <div>
+      <button onClick={onClickCount}>Counter</button>
+      <button onClick={onClickRequest}>Submit</button>
+    </div>
+  );
+}
+```
+
+### 问题所在 ⚡
+
+乍一看，您可能会问这到底有什么问题？ 不正是这样维护状态吗？是的您是对的，上面的代码可以正常地运行并且可能永远不会有问题，但是在React中，每次状态更改都会对该组件及其子组件进行重新渲染。但是在上面的示例中我们从未在组件渲染中使用该状态，所以每次设置计数器时都会导致不必要的渲染，这可能会影响性能或产生意外的副作用。
+
+### 解决办法 ✅
+
+如果要在组件内部使用一个变量，并且在不同的渲染中保持该变量的值，同时变量值的改变又不会强制组件重新渲染，则可以使用`useRef hook`。 它可以保持变量值，但不会强制重新渲染组件。
+```jsx
+function ClickButton(props) {
+  const count = useRef(0);
+
+  const onClickCount = () => {
+    count.current++;
+  };
+
+  const onClickRequest = () => {
+    apiCall(count.current);
   };
 
   return (
