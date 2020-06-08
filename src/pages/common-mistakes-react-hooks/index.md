@@ -79,3 +79,118 @@ function ClickButton(props) {
   );
 }
 ```
+
+# 2. 使用router.push代替Link
+
+这可能是一个简单以及非常容易发现的问题并且和React本身并没有真正的联系，但是当人们编写React组件时，我仍然常常发现这种写法。
+
+假设创建一个按钮，单击该按钮用户将被重定向到另一个页面。 由于应用是SPA，所以该操作将是客户端路由机制。 因此我们将需要某种库来执行客户端路由操作。 在React生态中，最受欢迎的是路由库是react-router，下面的示例将使用该库。
+
+所以只要添加点击事件回调就会将用户重定向到所需的页面，对吗？
+
+### 这很危险 ❌
+
+```jsx
+function ClickButton(props) {
+  const history = useHistory();
+
+  const onClick = () => {
+    history.push('/next-page');
+  };
+
+  return <button onClick={onClick}>Go to next page</button>;
+}
+```
+
+### 问题所在 ⚡
+
+即使上面的代码对于大多数用户来说都可以正常工作，但这里的可访问性(accessibility)仍然存在巨大的问题。 该按钮根本不会被标记为到另一个页面的链接，这使得屏幕阅读器几乎无法识别该按钮。 另外试试在新标签页或窗口中打开这个链接？ 很可能不会成功。
+
+### 解决办法 ✅
+
+与用户交互的跳转到其他页面的任何链接应尽可能由`<Link>`组件或常规的`<a>`标签处理。
+
+```jsx
+function ClickButton(props) {
+  return (
+    <Link to="/next-page">
+      <span>Go to next page</span>
+    </Link>
+  );
+}
+```
+
+**额外收获:**  代码更简洁，更具可读性。
+
+# 3. 使用useEffect处理Actions
+
+React引入的最好，思虑最周到的hook之一是"useEffect" hook。 它可以处理与`prop`或`state`变更相关的actions。 useEffect非常有用，但也经常在可能不需要它的地方被使用。
+
+想象有一个组件，该组件会请求商品列表并将其渲染到dom。 另外，如果请求成功，将调用"onSuccess"函数。该函数作为`prop`传递给了该组件。
+
+### 这很危险 ❌
+
+```jsx
+function DataList({ onSuccess }) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [data, setData] = useState(null);
+
+  const fetchData = useCallback(() => {
+    setLoading(true);
+    callApi()
+      .then((res) => setData(res))
+      .catch((err) => setError(err))
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  useEffect(() => {
+    if (!loading && !error && data) {
+      onSuccess();
+    }
+  }, [loading, error, data, onSuccess]);
+
+  return <div>Data: {data}</div>;
+}
+```
+
+### 问题所在 ⚡
+
+组件一共有两个useEffect hook，第一个在初次渲染时处理api调用，第二个在loading结束，没有错误并且状态中有数据的情况下调用onSuccess函数。这一定是一次成功的调用。 看起来很有道理吧？
+
+可以肯定的是对于第一次调用这是没有问题的，并且可能永远不会失败。 但是，我们也失去了action和需要被调用的函数之间的直接联系。 另外我们不能100%保证在fetch操作成功后这种情况才会发生，而这正是我们开发人员所讨厌的。
+
+### 解决办法 ✅
+
+一个直接的解决方案是将"onSuccess"函数的调用设在fetch成功后的位置：
+
+```jsx
+function DataList({ onSuccess }) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [data, setData] = useState(null);
+
+  const fetchData = useCallback(() => {
+    setLoading(true);
+    callApi()
+      .then((fetchedData) => {
+        setData(fetchedData);
+        onSuccess();
+      })
+      .catch((err) => setError(err))
+      .finally(() => setLoading(false));
+  }, [onSuccess]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  return <div>{data}</div>;
+}
+```
+
+现在何时调用了onSuccess一目了然，确切地说是在api调用成功的情况下。
