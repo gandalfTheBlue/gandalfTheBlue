@@ -194,3 +194,118 @@ function DataList({ onSuccess }) {
 ```
 
 现在何时调用了onSuccess一目了然，确切地说是在api调用成功的情况下。
+
+# 4. 单一职责的组件
+
+构造组件有时候是困难的。 在什么时候应该将一个组件拆分为几个较小的组件呢？ 应该如何构造组件树呢？ 当我们使用基于组件的框架时，每天都会出现上述问题。 但是，设计组件时常见的错误是将两个用例组合到一个组件中。 让我们以标题为例，该标题在移动设备上显示汉堡按钮或在桌面web端显示标签。 （切换条件将由神奇的`isMobile`函数处理，这不是本示例的一部分🧙‍）
+
+### 这很危险 ❌
+
+```jsx
+function Header(props) {
+  return (
+    <header>
+      <HeaderInner menuItems={menuItems} />
+    </header>
+  );
+}
+
+function HeaderInner({ menuItems }) {
+  return isMobile() ? <BurgerButton menuItems={menuItems} /> : <Tabs tabData={menuItems} />;
+}
+```
+
+### 问题所在 ⚡
+
+通过这种分支条件，HeaderInner组件试图同时处理两种不同的业务逻辑，我们都从[Jekyll](https://en.wikipedia.org/wiki/Strange_Case_of_Dr_Jekyll_and_Mr_Hyde)先生那里获悉，一心二用是不好的事情。 而且，这使得测试或在其他地方复用该组件变得更加困难。
+
+### 解决办法 ✅
+
+将分支条件往上提升一级，使得可以更轻松地展示组件的用途，并且它们仅负责一件事情，即`Header`只能是`Tab`或者`BurgerButton`，而不是尝试同时做两件事。
+
+```jsx
+function Header(props) {
+  return (
+    <header>{isMobile() ? <BurgerButton menuItems={menuItems} /> : <Tabs tabData={menuItems} />}</header>
+  );
+}
+```
+
+# 4. 单一职责的useEffects
+
+还记得在hooks发布之前，我们只有通过`componentWillReceiveProps`或`componentDidUpdate`方法衔接到React组件的渲染过程中吗？ 对我来说这是黑暗的记忆同时也让我意识到使用`useEffect hook`的美妙之处，尤其是可以随意使用它们。
+
+但是有时的粗心大意并让一个"useEffect"同时做几件事会带回那些黑暗的回忆。 例如，假设您有一个组件以某种方式从后端获取一些数据，并且还根据当前位置显示面包屑。 （再次使用`react-router`来获取当前位置。）
+
+### 这很危险 ❌
+
+```jsx
+function Example(props) {
+  const location = useLocation();
+
+  const fetchData = useCallback(() => {
+    /*  Calling the api */
+  }, []);
+
+  const updateBreadcrumbs = useCallback(() => {
+    /* Updating the breadcrumbs*/
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+    updateBreadcrumbs();
+  }, [location.pathname, fetchData, updateBreadcrumbs]);
+
+  return (
+    <div>
+      <BreadCrumbs />
+    </div>
+  );
+}
+```
+
+### 问题所在 ⚡
+
+这里有两个业务逻辑，即“数据获取”和“显示面包屑”。 两者都通过`useEffect`来进行更新。 当`fetchData`和`updateBreadcrumbs`函数或`location`更改时，将重新运行这个`useEffect hooks`。 现在的主要问题是，当`location`更改时，我们会重新调用`fetchData`函数。 这可能是我们没有想到的副作用。
+
+### 解决办法 ✅
+
+拆分`useEffect`可确保每个effect仅作用于单一的副作用，这可以使没有预料到的副作用不再出现。
+
+```jsx
+function Example(props) {
+  const location = useLocation();
+
+  const updateBreadcrumbs = useCallback(() => {
+    /* Updating the breadcrumbs*/
+  }, []);
+
+  useEffect(() => {
+    updateBreadcrumbs();
+  }, [location.pathname, updateBreadcrumbs]);
+
+  const fetchData = useCallback(() => {
+    /*  Calling the api */
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  return (
+    <div>
+      <BreadCrumbs />
+    </div>
+  );
+}
+```
+
+**额外收获:**  现在业务逻辑也在组件内被有序的分类排列了。
+
+# 总结
+
+在React中编写组件时有很多陷阱。 我们不可能百分百地了解整个运行机制并避免每一个小的甚至大的错误。 但是在学习框架或编程语言时犯错误也很重要，可能没有人会100％摆脱这些错误。
+
+我认为与他人分享您的经验可能对其他人非常有帮助，或许可以帮助他们减少错误的发生。
+
+如果您有任何疑问或认为这不是一个错误，请写信给我，我很想听听您的意见。
