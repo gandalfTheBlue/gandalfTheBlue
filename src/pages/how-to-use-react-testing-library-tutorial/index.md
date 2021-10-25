@@ -1,5 +1,6 @@
 ---
 title: "怎样使用React Testing Library"
+date: '2021-04-07'
 ---
 
 # Jest vs React Testing Library
