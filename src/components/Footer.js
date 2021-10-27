@@ -18,6 +18,7 @@ class Footer extends React.Component {
         >
           github
         </a>
+        <div>蜀ICP备2021023940号</div>
       </footer>
     );
   }

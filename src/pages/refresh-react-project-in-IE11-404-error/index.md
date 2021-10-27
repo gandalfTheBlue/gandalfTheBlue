@@ -7,8 +7,6 @@ date: '2019-03-09'
 错误页面如下:
 
 
-![IE 404 错误页面](./404-error.png)
-
 项目背景：<br/>
 1， 利用 create react app 构建<br/>
 2， 部署在tomcat上<br/>

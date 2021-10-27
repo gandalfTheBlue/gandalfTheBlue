@@ -35,9 +35,12 @@
     "typography-theme-wordpress-2016": "^0.15.10"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "eslint": "^4.19.1",
     "eslint-plugin-react": "^7.11.1",
+    "ftp-deploy": "^2.4.1",
     "gh-pages": "^2.0.1",
+    "node-banner": "^1.4.0",
     "prettier": "^1.14.2"
   },
   "homepage": "https://gandalftheblue.github.io/gandalfTheBlue",
@@ -49,7 +52,8 @@
     "develop": "gatsby develop",
     "start": "npm run develop",
     "build": "rm -rf public && rm -rf .cache && gatsby build",
-    "deploy": "gatsby build --prefix-paths && gh-pages -d public",
+    "deploy:gh": "gatsby build --prefix-paths && gh-pages -d public",
+    "deploy": "yarn build && cross-env NODE_ENV=production node ./deploy.js",
     "dry": "yarn build && cp now.json public/ && cd public && now"
   },
   "husky": {
