@@ -18,7 +18,9 @@ class Footer extends React.Component {
         >
           github
         </a>
-        <div>蜀ICP备2021023940号</div>
+        <div>
+          <a href="https://beian.miit.gov.cn/">蜀ICP备2021023940号</a>
+        </div>
       </footer>
     );
   }
