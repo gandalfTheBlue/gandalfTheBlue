@@ -37,7 +37,7 @@ function SEO({ meta, image, title, description, slug, lang = 'en' }) {
                   title,
                 }
               : {
-                  title: `${siteMetadata.title} — A blog by shan yang`,
+                  title: `我的信息笔记`,
                 })}
             meta={[
               {

@@ -16,7 +16,7 @@ const EnvDomain = {
     short: 'test',
   },
   production: {
-    host: '114.132.41.66',
+    host: '43.142.154.244',
     user: 'ys',
     password: 'b%RU470!',
     short: 'prod',
